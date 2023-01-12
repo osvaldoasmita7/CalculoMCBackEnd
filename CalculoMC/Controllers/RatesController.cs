@@ -40,7 +40,6 @@ namespace CalculoMC.Controllers
             var h = 450;
             var rest = model.Waist - model.Neck;
             var sex = model.Sex.ToString();
-            var tableCalifications = await db.Rate.Where((x) => x.Sex ==sex ).OrderBy(y=>y.Orden).ToListAsync();
             if (model.Sex == 'F')
             {
                 a = 163.205;
@@ -55,6 +54,11 @@ namespace CalculoMC.Controllers
             }
             var BFP = a * Math.Log10(rest) - b * Math.Log10(model.Height) + c;// unidades usc
             var SI = (d / (e - f * Math.Log10(rest) + g * Math.Log10(model.Height))) - h; // unidades metricas
+            // Aquí sacamos la consulta a la base de datos
+            var tableCalifications = await db.Rate.Where((x) => x.Sex == sex).OrderBy(y => y.Orden).ToListAsync();
+            /*SI EXISTE ALGÚN ERROR FAVOR DE IR A: CalculoMC->Web.config y luego a la linea 13 y 14 que se encuentra la cadena de conexión. 
+             Así mismo también ir a DataAccess->App.Config y luego a la linea 8 que se encuentra la cadena de conexión
+             Verificar el nombre del servidor que en mi caso es localhost\SQLEXPRESS para la base de datos local y que el nombre de la base de datos sea el que se tiene en la base de datos*/
             var results = new { BfpSI = SI, BfpUSC = BFP, califications = tableCalifications };
             return Ok(results);
         }
